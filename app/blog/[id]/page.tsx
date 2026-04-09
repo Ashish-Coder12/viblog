@@ -5,7 +5,8 @@ import { createServerSupabaseClient } from '@/lib/supabase';
 import { Blog } from '@/types';
 import { DeleteBlogButton } from '@/components/DeleteBlogButton';
 
-export default async function BlogPage({ params }: { params: { id: string } }) {
+export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
@@ -13,7 +14,7 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', userId) // enforce ownership
     .single();
 
