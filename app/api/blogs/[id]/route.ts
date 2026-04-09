@@ -4,8 +4,9 @@ import { createServerSupabaseClient } from '@/lib/supabase';
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+{ params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,7 +16,7 @@ export async function DELETE(
   const { error } = await supabase
     .from('blogs')
     .delete()
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', userId);
 
   if (error) {
