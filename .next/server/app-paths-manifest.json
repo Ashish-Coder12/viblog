@@ -1,0 +1,7 @@
+{
+  "/api/blogs/generate/route": "app/api/blogs/generate/route.js",
+  "/blog/[id]/page": "app/blog/[id]/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/page": "app/page.js",
+  "/sign-up/[[...sign-up]]/page": "app/sign-up/[[...sign-up]]/page.js"
+}
