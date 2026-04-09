@@ -15,16 +15,3 @@ export function createServerSupabaseClient() {
     { auth: { persistSession: false } }
   );
 }
-
-// Set the Clerk user ID for RLS policies in a transaction
-export async function withUserContext<T>(
-  userId: string,
-  fn: (client: ReturnType<typeof createClient>) => Promise<T>
-): Promise<T> {
-  const client = createServerSupabaseClient();
-  await client.rpc('set_config', {
-    setting: 'app.current_user_id',
-    value: userId,
-  });
-  return fn(client);
-}
