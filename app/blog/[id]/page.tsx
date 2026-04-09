@@ -4,29 +4,29 @@ import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { Blog } from '@/types';
 import { DeleteBlogButton } from '@/components/DeleteBlogButton';
+// import { PublicShareButton } from '@/components/PublicShareButton';
 
 export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
+
+  const { id } = await params;
 
   const supabase = createServerSupabaseClient();
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
     .eq('id', id)
-    .eq('user_id', userId) // enforce ownership
+    .eq('user_id', userId)
     .single();
 
   if (error || !blog) notFound();
 
   const b = blog as Blog;
 
-  function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString('en-US', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-  }
+  const formattedDate = new Date(b.created_at).toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
@@ -45,22 +45,13 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
           ← Back
         </Link>
         <div style={{ flex: 1 }} />
-        <DeleteBlogButton blogId={b.id} />
+        {/* <PublicShareButton blogId={b.id} /> */}
+        {/* <DeleteBlogButton blogId={b.id} /> */}
       </nav>
 
       <div style={{ maxWidth: '740px', margin: '0 auto', padding: '40px 24px' }}>
-        {/* Thumbnail */}
-        {/* {b.thumbnail && (
-          <img
-            src={b.thumbnail}
-            alt={b.title}
-            style={{
-              width: '100%', borderRadius: '16px', marginBottom: '32px',
-              objectFit: 'cover', aspectRatio: '16/9', background: 'var(--bg-card)'
-            }}
-          // onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-        )} */}
+
+        {/* YouTube iframe player */}
         <div style={{
           position: 'relative', width: '100%', paddingTop: '56.25%',
           borderRadius: '16px', overflow: 'hidden',
@@ -84,19 +75,16 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
           marginBottom: '16px', flexWrap: 'wrap'
         }}>
           <span style={{ fontSize: '13px', color: 'var(--text-subtle)' }}>
-            {formatDate(b.created_at)}
+            {formattedDate}
           </span>
           <span style={{ color: 'var(--border)', fontSize: '13px' }}>·</span>
           <a
             href={b.youtube_url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              fontSize: '13px', color: 'var(--accent)', textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: '4px'
-            }}
+            style={{ fontSize: '13px', color: 'var(--accent)', textDecoration: 'none' }}
           >
-            View on YouTube ↗
+            Watch on YouTube ↗
           </a>
         </div>
 
@@ -122,7 +110,10 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
           border: '1px solid var(--border)', borderRadius: '12px',
           marginBottom: '40px'
         }}>
-          <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-subtle)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <p style={{
+            fontSize: '12px', fontWeight: 600, color: 'var(--text-subtle)',
+            marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.06em'
+          }}>
             Hashtags
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -151,8 +142,8 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
             </summary>
             <p style={{
               marginTop: '16px', fontSize: '13px', color: 'var(--text-subtle)',
-              lineHeight: 1.7, whiteSpace: 'pre-wrap', maxHeight: '300px',
-              overflowY: 'auto'
+              lineHeight: 1.7, whiteSpace: 'pre-wrap',
+              maxHeight: '300px', overflowY: 'auto'
             }}>
               {b.transcript}
             </p>

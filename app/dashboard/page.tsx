@@ -87,7 +87,7 @@ export default function DashboardPage() {
           <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
             {user?.firstName || user?.emailAddresses[0]?.emailAddress}
           </span>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton afterSwitchSessionUrl='/' />
         </div>
       </nav>
 
